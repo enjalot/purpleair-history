@@ -17,5 +17,9 @@ d3
     { columns: d.fields }
   )
 //   console.log("d", d)
-  fs.writeFileSync("input/air-" + ts + ".json", JSON.stringify(d))
+  let outfile = "input/air-" + ts + ".json"
+  fs.writeFileSync(outfile, JSON.stringify(d))
+  console.log("wrote", outfile)
+  console.log("timestamp", ts)
+  console.log("run the next command:", "node scrape.js " + ts)
 })

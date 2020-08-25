@@ -6,15 +6,19 @@ It's currently focused on trying to get hourly historical records for sensors in
 https://observablehq.com/@enjalot/air-quality-explorations
 
 ## snapshot.js
+This downloads a snapshot of stations that we can use to seed the download of the historical data.
 ```
 node snapshot.js
 ```
 
+
 ## scrape.js
 This will download the detailed info for each station based on the snapshot of stations 
+
 ```
 node scrape.js
 ```
+
 This will output into a folder with the date and hour timestamp like `data-2020-08-25-12`
 
 ## scrape-history.js

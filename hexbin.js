@@ -6,8 +6,10 @@ let d3 = require("d3");
 let d3h = require("d3-hexbin");
 
 let tf = d3.timeFormat("%Y-%m-%d-%H")
-let datadir = process.argv[2] || "data-" + tf(new Date())
-let id = "ids-all-" + datadir.slice(5)
+let ts = process.argv[2] || tf(new Date())
+let datadir = "data-" + ts
+
+let id = "ids-all-" + ts
 console.log("id", id)
 
 dir = "output"

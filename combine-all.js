@@ -5,9 +5,10 @@ let fs = require("fs")
 let d3 = require("d3");
 
 let tf = d3.timeFormat("%Y-%m-%d-%H")
-let dir = process.argv[2] || "data-" + tf(new Date())
+let ts = process.argv[2] || tf(new Date())
+let dir = "data-" + ts
 console.log("dir", dir)
-let ts = dir.slice(5)
+
 // let ids = JSON.parse(fs.readFileSync("ids.json").toString())
 
 let id = "ids-all"

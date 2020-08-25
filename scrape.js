@@ -3,7 +3,13 @@ if (typeof fetch !== 'function') {
 }
 let fs = require("fs")
 let d3 = require("d3")
-let airfile = JSON.parse(fs.readFileSync("input/air.json").toString())
+
+let tf = d3.timeFormat("%Y-%m-%d-%H")
+let ts = process.argv[2] || tf(new Date())
+let dir = "data-" + ts
+console.log("dir", dir)
+
+let airfile = JSON.parse(fs.readFileSync(`input/air-${ts}.json`).toString())
   .filter(d => d.Type == 0)
 
 // air = d3
@@ -18,8 +24,6 @@ let airfile = JSON.parse(fs.readFileSync("input/air.json").toString())
 // )
 
 console.log(`${airfile.length} sensors`)
-let tf = d3.timeFormat("%Y-%m-%d-%H")
-let dir = "data-" + tf(new Date())
 
 try {
   fs.mkdirSync(dir)
