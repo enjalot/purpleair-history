@@ -1,0 +1,17 @@
+{
+  "name": "airquality",
+  "version": "1.0.0",
+  "description": "",
+  "main": "combine-all.js",
+  "dependencies": {
+    "d3": "^6.0.0-rc.3",
+    "d3-hexbin": "^0.2.2",
+    "node-fetch": "^2.6.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
