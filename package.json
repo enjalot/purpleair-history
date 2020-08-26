@@ -4,6 +4,7 @@
   "description": "",
   "main": "combine-all.js",
   "dependencies": {
+    "async": "^3.2.0",
     "d3": "^6.0.0-rc.3",
     "d3-hexbin": "^0.2.2",
     "node-fetch": "^2.6.0"

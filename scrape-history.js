@@ -7,6 +7,7 @@ if (typeof fetch !== 'function') {
 }
 let fs = require("fs")
 let d3 = require("d3");
+let asynch = require("async")
 const { exec } = require('child_process');
 
 // how many we will attempt at once
@@ -27,6 +28,9 @@ console.log("dir", dir)
 // TODO
 // programatically determine start date as previous 10 days 
 // start=2020-08-10%2023:12:35
+let tenDaysAgo = d3.timeDay.floor(d3.timeDay.offset(new Date(), -10))
+let start = d3.timeFormat("%Y-%m-%d %H:%M:%S")(tenDaysAgo)
+
 
 
 console.log(`${airfile.length} sensors`)
@@ -37,9 +41,9 @@ try {
   fs.mkdirSync(dir)
 } catch(e) {}
 
-let count = 0;
 let got = 0
-airfile.forEach(async (sensor,i) => {
+asynch.eachLimit(airfile, 100, (sensor, cb) => {
+  let i = airfile.indexOf(sensor)
   // try to avoid rate limiting
 
   let sfn = dir + "/" + sensor.ID + ".json"
@@ -56,10 +60,9 @@ airfile.forEach(async (sensor,i) => {
   try {
     fs.readFileSync(fn)
     console.log("had", fn)
+    return cb()
   } catch(e) {
-    setTimeout(async () => {
-      console.log("fetching", i, ++count)
-      if(count > limit) return
+      console.log("fetching", i)
 
       // let thingId = thing.THINGSPEAK_PRIMARY_ID
       // let thingAPI = thing.THINGSPEAK_PRIMARY_ID_READ_KEY
@@ -68,16 +71,22 @@ airfile.forEach(async (sensor,i) => {
       let thingId = thing.THINGSPEAK_SECONDARY_ID
       let thingAPI = thing.THINGSPEAK_SECONDARY_ID_READ_KEY
 
-      let p03url = `https://api.thingspeak.com/channels/${thingId}/fields/1.json?start=2020-08-10%2023:12:35&offset=0&round=2&average=60&api_key=${thingAPI}`
-      let pm1url = `https://api.thingspeak.com/channels/${thingId}/fields/8.json?start=2020-08-10%2023:12:35&offset=0&round=2&average=60&api_key=${thingAPI}`
+      let p03url = `https://api.thingspeak.com/channels/${thingId}/fields/1.json?start=${start}&offset=0&round=2&average=60&api_key=${thingAPI}`
+      let pm1url = `https://api.thingspeak.com/channels/${thingId}/fields/8.json?start=${start}&offset=0&round=2&average=60&api_key=${thingAPI}`
       console.log("p03", p03url)
       console.log("pm1", pm1url)
-      let results = await Promise.all([
-        //p_0_3
-        d3.json(p03url),
-        //pm_1
-        d3.json(pm1url)
-      ])
+    //   let results = await Promise.all([
+    //     //p_0_3
+    //     d3.json(p03url),
+    //     //pm_1
+    //     d3.json(pm1url)
+    //   ])
+      d3.json(p03url).then(response0 => {
+        
+        d3.json(pm1url).then(response1 => {
+            let results = [response0, response1]
+            console.log("response", response0)
+
 
       function mapper(d, field) {
         return {
@@ -100,20 +109,24 @@ airfile.forEach(async (sensor,i) => {
       fs.writeFileSync(fn, csv)
       console.log("wrote", fn, got)
       got++
-      if(got >= limit) {
-        let csvcountcmd = `ls -lah ${dir}/*.csv | wc -l`
-        exec(csvcountcmd, (error, stdout, stderr) => {
-          console.log(csvcountcmd, stdout)
+        
+      
+      cb()
+
         })
-        let jsoncountcmd = `ls -lah ${dir}/*.json | wc -l`
-        exec(jsoncountcmd, (error, stdout, stderr) => {
-          console.log(jsoncountcmd, stdout)
-        })
-      }
-    // the timeout
-    }, count*20)
-    // i++
+      })
+
   }
+}, (err) => {
+ console.log("DONE", err) 
+ let csvcountcmd = `ls -lah ${dir}/*.csv | wc -l`
+  exec(csvcountcmd, (error, stdout, stderr) => {
+    console.log(csvcountcmd, stdout)
+  })
+  let jsoncountcmd = `ls -lah ${dir}/*.json | wc -l`
+  exec(jsoncountcmd, (error, stdout, stderr) => {
+    console.log(jsoncountcmd, stdout)
+  })
 })
 
 
