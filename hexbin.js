@@ -17,6 +17,7 @@ try {
   fs.mkdirSync(dir)
 } catch(e) {}
 
+
 // let id = "ids-full"
 // let ids = JSON.parse(fs.readFileSync("ids.json").toString())
 let sensors = JSON.parse(fs.readFileSync("input/air.json").toString())
@@ -100,6 +101,29 @@ let hexdata = Object.assign(
     {title: "foo"}
 );
 
-let outfile = dir + "/" + id +"-hexbins.json"
-fs.writeFileSync(outfile, JSON.stringify(hexdata))
-console.log("done", outfile)
+// TODO: also save this out as a CSV that matches the smoke forecast
+let rows = []
+hexdata.forEach(d => {
+  d.days.forEach(day => {
+    rows.push({
+      lng: round(d.lng),
+      lat: round(d.lat),
+      day: day.t,
+      pm1: Math.round(day.pm1),
+      p03: Math.round(day.p03)
+    })
+  })
+})
+
+let outfilejson = dir + "/" + id +"-hexbins.json"
+fs.writeFileSync(outfilejson, JSON.stringify(hexdata))
+console.log("done", outfilejson)
+
+let outfilecsv = dir + "/" + id +"-hexbins.csv"
+fs.writeFileSync(outfilecsv, d3.csvFormat(rows))
+console.log("done", outfilecsv)
+
+function round(n) {
+  let prec = 10000
+  return Math.floor(n * prec) / prec
+}
