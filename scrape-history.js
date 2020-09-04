@@ -127,6 +127,7 @@ asynch.eachLimit(airfile, 100, (sensor, cb) => {
   exec(jsoncountcmd, (error, stdout, stderr) => {
     console.log(jsoncountcmd, stdout)
   })
+  console.log("run the next command:", "node combine-all.js " + ts)
 })
 
 

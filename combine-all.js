@@ -51,3 +51,4 @@ let outfile = "output/" + id + "-" + ts + "-out.csv"
 // fs.writeFileSync(id+"-out.csv", d3.csvFormat(combined))
 fs.writeFileSync(outfile, d3.csvFormat(combined))
 console.log("done", outfile)
+console.log("run the next command:", "node hexbin.js " + ts)
